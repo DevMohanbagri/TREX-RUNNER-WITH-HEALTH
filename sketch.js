@@ -2,7 +2,7 @@ var PLAY = 1;
 var END = 0;
 var WAIT = 2;
 var gameState = PLAY;
-
+const MAX_HEALTH=5;
 var trex, trex_running, trex_collided;
 var ground, invisibleGround, groundImage;
 
@@ -80,27 +80,10 @@ function setup() {
   invisibleGround = createSprite(displayWidth/2-635,190,displayWidth,10);
   invisibleGround.visible = false;
   
-  h1 = createSprite(displayWidth/2-705, -50,30,30);
-  h1.addImage(healthImg);
-  h1.scale = 0.08;
-
-  h2 = createSprite(displayWidth/2-675, -50,30,30);
-  h2.addImage(healthImg);
-  h2.scale = 0.08;
-
-  h3 = createSprite(displayWidth/2-645, -50,30,30);
-  h3.addImage(healthImg);
-  h3.scale = 0.08;
-
-  h4 = createSprite(displayWidth/2-615, -50,30,30);
-  h4.addImage(healthImg);
-  h4.scale = 0.08;
-
-  h5 = createSprite(displayWidth/2-585, -50,30,30);
-  h5.addImage(healthImg);
-  h5.scale = 0.08;
-
-  health.push(h1,h2,h3,h4,h5);
+ 
+ createHealth();  //creating health array
+ 
+ // health.push(h1,h2,h3,h4,h5);
 
   cloudsGroup = new Group();
   obstaclesGroup = new Group();
@@ -111,7 +94,9 @@ function setup() {
 function draw() {
   //trex.debug = true;
   background(180);
+
   text("Score: "+ score, 10,0);
+  
   
   if (gameState===PLAY){
     score = score + Math.round(getFrameRate()/60);
@@ -133,10 +118,10 @@ function draw() {
   
     if( obstaclesGroup.isTouching(trex)){
       gameState = WAIT;
-      health.pop();
-      reducingHealth();
+      health[health.length-1].visible=false;  //making the last element visible false.
+      health.pop();   //then removing the last element from the array.now array length will be reduced by 1
+     // reducingHealth();
     }
-
     if(health.length===0 && obstaclesGroup.isTouching(trex)){
       gameState = END;
     }
@@ -182,6 +167,7 @@ function draw() {
     if(mousePressedOver(continu)) {
       wait();
     }
+    
 
     if(mousePressedOver(restart)) {
       reset();
@@ -189,9 +175,9 @@ function draw() {
 
   }
 
-  console.log(health);
   drawSprites();
 }
+
 
 function spawnClouds() {
   //write code here to spawn the clouds
@@ -202,6 +188,7 @@ function spawnClouds() {
     cloud.scale = 0.5;
     cloud.velocityX = -3;
     
+
      //assign lifetime to the variable
     cloud.lifetime = 440;
     
@@ -253,62 +240,7 @@ function reset(){
   restart.visible = false;
   continu.visible = false;
   
-
- /* h1 = createSprite(displayWidth/2-705, -50,30,30);
-  h1.addImage(healthImg);
-  h1.scale = 0.08;
-
-  h2 = createSprite(displayWidth/2-675, -50,30,30);
-  h2.addImage(healthImg);
-  h2.scale = 0.08;
-
-  h3 = createSprite(displayWidth/2-645, -50,30,30);
-  h3.addImage(healthImg);
-  h3.scale = 0.08;
-
-  h4 = createSprite(displayWidth/2-615, -50,30,30);
-  h4.addImage(healthImg);
-  h4.scale = 0.08;
-
-  h5 = createSprite(displayWidth/2-585, -50,30,30);
-  h5.addImage(healthImg);
-  h5.scale = 0.08;
-
-  health.push();
-  */
-  //refill();
-  if(health[4]===undefined){
-    health.push(h5);
-    h5.visible = true;
-  }
-
-  if(health[3]===undefined){
-    health.push(h4,h5);
-    h4.visible = true;
-    h5.visible = true;
-  }
-
-  if(health[2]===undefined){
-    health.push(h3,h4,h5);
-    h3.visible = true;
-    h4.visible = true;
-    h5.visible = true;
-  }
-  if(health[1]===undefined){
-    health.push(h2,h3,h4,h5);
-    h2.visible = true;
-    h3.visible = true;
-    h4.visible = true;
-    h5.visible = true;
-  }
-  if(health[0]===undefined){
-    health.push(h1,h2,h3,h4,h5);
-    h1.visible = true;
-    h2.visible = true;
-    h3.visible = true;
-    h4.visible = true;
-    h5.visible = true;
-  }
+  createHealth();
 
   obstaclesGroup.destroyEach();
   cloudsGroup.destroyEach();
@@ -341,64 +273,21 @@ function wait(){
   console.log(localStorage["HighestScore"]);
 }
 
-function reducingHealth(){
-  if(health[0] != undefined){
-    h1.visible = true;
-  }
-  else{
-    h1.visible = false;
-  }
 
-  if(health[1] != undefined){
-    h2.visible = true;
-  }
-  else{
-    h2.visible = false;
-  }
 
-  if(health[2] != undefined){
-    h3.visible = true;
-  }
-  else{
-    h3.visible = false;
-  }
-
-  if(health[3] != undefined){
-    h4.visible = true;
-  }
-  else{
-    h4.visible = false;
-  }
-
-  if(health[4] != undefined ){
-    h5.visible = true;
-  }
-  else{
-    h5.visible = false;
-  }
-}
-
-function refill(){
-  if(health[4]===undefined){
-    health.push(h5);
-    h5.visible = true;
-  }
-
-  if(health[3]===undefined){
-    health.push(h5);
-    h4.visible = true;
-  }
-
-  if(health[2]===undefined){
-    health.push(h5);
-    h3.visible = true;
-  }
-  if(health[1]===undefined){
-    health.push(h5);
-    h2.visible = true;
-  }
-  if(health[0]===undefined){
-    health.push(h5);
-    h1.visible = true;
+function createHealth(){
+  var x
+  var remainingHealth=health.length; 
+  console.log(remainingHealth)
+  if(remainingHealth===0)
+     x=displayWidth/2-705;
+  else
+    x=health[remainingHealth-1].x+30
+  for(var count=remainingHealth; count<MAX_HEALTH; count++){
+    h = createSprite(x, -50,30,30);
+    x+=30;
+    h.addImage(healthImg);
+    h.scale = 0.08;
+    health.push(h)  
   }
 }
